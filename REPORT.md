@@ -440,107 +440,53 @@ Sim, considerando:
 
 ## Melhorias
 
-### 5.1 Melhorias Imediatas (Curto Prazo)
+### 5.1 Melhorias Imediatas
 
-#### 1. **Divisão Rigorosa Train/Test**
-```python
-Recomendação: Implementar split temporal ou estratificado
-Benefício: Avaliação final em dados verdadeiramente invisíveis
-Impacto: Estimativa mais realista de erro de generalização
-```
 
-#### 2. **Modelos Alternativos para Comparação**
-```python
-Candidatos:
+#### 1. **Modelos Alternativos para Comparação**
+
+Avaliar outros modelos para comparação com o modelo de KNN. Possíveis modelos a serem considerados:
   - Logistic Regression (baseline linear)
   - SVM com kernel RBF (não-linear)
   - Random Forest (ensemble)
   - Gaussian Process (probabilístico)
   
-Benefício: Validar que KNN é realmente ótimo
-Métrica: Comparar F1, AUC e tempo
-```
+Com isso validar que KNN é realmente ótimo e utilizar métrics F1 e AUC para comparação
 
-#### 3. **Validação Cruzada Aninhada**
-```python
-Atual: Cross-validation simples para hiper-parâmetros
-Recomendado: Nested CV para estimativa não-enviesada
-Razão: Previne optimistic bias de hiper-parameter tuning
-```
+#### 2. **Validação Cruzada Aninhada**
 
-#### 4. **Interpretabilidade: Análise de Vizinhos**
-```python
-Para amostras classificadas:
+* Realizar uma validação cruzada para melhor seleção de hiper-parâmetros. Uma possível implementação seria usar Nested CV para estimativa não-enviesada. Dessa forma seria possível previnir optimistic bias de hiper-parameter tuning
+
+#### 3. **Interpretabilidade: Análise de Vizinhos**
+
+* Para amostras classificadas:
   - Visualizar k=14 vizinhos mais próximos
   - Verificar se vizinhos costumam ter mesma síndrome
   - Identificar erros (casos ambíguos)
-  
-Benefício: Entender por que modelo acerta/erra
-```
 
-### 5.2 Melhorias Médias (Médio Prazo)
+#### 4. **Balanceamento Explícito**
 
-#### 5. **Metric Learning e Distance Tuning**
-```python
-Explorar:
-  - Mahalanobis distance (weighted Euclidean)
-  - Siamese networks (aprender métrica)
-  - Triplet loss (refinar embeddings)
-
-Expectativa: F1 pode aumentar de 0.75 para 0.80+
-```
-
-#### 6. **Balanceamento Explícito**
-```python
-Técnicas:
+Utilizar outras técnicas de balanceamento, como por exemplo:
   - SMOTE (oversampling sintético)
   - Class weights em SVM
   - Stratified undersampling
   
 Validação: Comparar com baseline desbalanceado
-```
 
-#### 7. **Feature Engineering em Embeddings**
-```python
-Explorar transformações:
-  - Estatísticas (mean, std, kurtosis por dimensão)
-  - PCA reduzido (32-64D mantendo ~50% variância)
-  - Clustering de embeddings (k-means features)
-  
-Benefício: Reduzir dimensionalidade, possível ganho de performance
-```
+### 5.3 Melhorias Avançadas
 
-### 5.3 Melhorias Avançadas (Longo Prazo)
+#### 5. **Pipeline em Produção**
 
-#### 8. **Pipeline em Produção**
-```python
-Implementar:
-  - Implementar um serve de inferência mais robusto (utilizando kserve, por exemplo)
-  - Implementar orquestradores que auxiliem na escala do modelo a escalar melhor, como o Airflow ou Kubeflow Pipelines
-  - Model versioning (MLflow)
-  - Monitoramento de drift
-  - Logging e auditoria
-  
-Objetivo: Deploy seguro em ambiente clínico
-Considerações: Validação regulatória (se aplicável)
-```
+- Implementar um pipeline para o deploy do modelo em um server de inferência especializado, como KServe ou Seldon Core
+- Implementar orquestradores que auxiliem na escala do modelo a escalar melhor, como o Airflow ou Kubeflow
+- Utilizar model versioning com MLflow
+- Monitoramento de drift
+- Logging e auditoria
 
-#### 9. **Explicabilidade Clínica**
-```python
+#### 6. **Explicabilidade Clínica**
+
 Para cada predição, fornecer:
   - Confiança (distância ao vizinho k-ésimo)
   - Síndrome concorrentes (top-3)
   - Razão (qual dimensão/característica contribuiu mais)
-  
-Benefício: Clinicamente interpretável, aumenta confiança
-```
-
-#### 10. **Ensembles e Stacking**
-```python
-Testar:
-  - Votação entre KNN + Logistic Regression + SVM
-  - Stacking com meta-learner
-  - Bagging com diferentes valores de k
-  
-Benefício: Reduzir variância, possível melhoria de 1-2% em F1
-```
+  - Calculo de SHAP/LIME do modelo

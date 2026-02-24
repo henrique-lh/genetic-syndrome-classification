@@ -74,10 +74,10 @@ def evaluate_knn(
     """
     logger.info(f"Evaluating metric: {metric_name}")
 
-    skf = StratifiedGroupKFold(n_splits=10, shuffle=True, random_state=42)
+    skf = StratifiedGroupKFold(n_splits=10, shuffle=True, random_state=42) # Following the requirement: Perform 10-fold cross-validation to evaluate the model performance.
     results = {}
 
-    for k in range(1, 16):
+    for k in range(1, 16): # Following the requirement: Evaluate KNN models with k values ranging from 1 to 15.
         acc_scores, f1_scores, auc_scores, top3_scores = [], [], [], []
 
         for train_idx, val_idx in skf.split(X, y, groups=groups):
@@ -111,7 +111,7 @@ def evaluate_knn(
             "top3_mean": float(np.mean(top3_scores)),
             "top3_std": float(np.std(top3_scores)),
         }
-        logger.info(f"{metric_name} | k={k} | F1={results[f'k={k}']['f1_macro_mean']:.4f}")
+        logger.info(f"{metric_name} | k={k} | F1 Macro Mean={results[f'k={k}']['f1_macro_mean']:.4f}")
 
     return results
 
@@ -162,13 +162,20 @@ def run_knn_classification() -> None:
     joblib.dump({"model": final_model, "label_encoder": label_encoder, "normalization": normalize_flag},
                 os.path.join(OUTPUT_DIR, "knn_best_model.pkl"))
 
+    best_f1_macro = f1_score(y, final_model.predict(X_final), average="macro")
+    best_auc_ovr = roc_auc_score(y, final_model.predict_proba(X_final), multi_class="ovr")
+
+    # Top-k was choosed arbitrarily as k=3, since it is a common choice for top-k evaluation in classification tasks. It can be changed to any other value if needed.
+    top_3 = top_k_accuracy_score(y, final_model.predict_proba(X_final), k=3)
+
     metadata = {
         "model_type": "knn",
         "distance_metric": best_metric,
         "k": best_k,
         "normalization": normalize_flag,
-        "f1_macro": experiments[best_metric][f"k={best_k}"]["f1_macro_mean"],
-        "auc_ovr": experiments[best_metric][f"k={best_k}"]["auc_ovr_mean"]
+        "f1_macro": best_f1_macro,
+        "auc_ovr": best_auc_ovr,
+        "top_3": top_3
     }
 
     with open(os.path.join(OUTPUT_DIR, "best_model_metadata.json"), "w") as f:

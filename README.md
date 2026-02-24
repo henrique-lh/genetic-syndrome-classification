@@ -26,19 +26,64 @@ uv sync
 pip install -r requirements.txt
 ```
 
-## Run
+## Usage
 
-Open a terminal and execute:
+### Starting the Server
+
+From the project root directory:
 
 ```bash
-# If you have UV installed
-uv run main.py
+# Run pipeline and then start server (default)
+python main.py
 
-# Or
-python3 main.py
+# Run only the inference server
+python main.py --server
+
+# Start server on a specific port
+python main.py --server --port 9000
+
+# Run only the pipeline
+python main.py --pipeline
+
+# Run pipeline and then start server
+python main.py --all
 ```
 
-After you run the command above, it will create a folder called `artifact` containing the results of the executed code.
+### Testing with cURL
+
+```bash
+# Health check
+curl -X GET "http://localhost:8000/health"
+
+# Single prediction with sample data
+curl -X POST "http://localhost:8000/predict" \
+  -H "Content-Type: application/json" \
+  -d @artifacts/sample_inputs/sample_1.json
+
+# Batch prediction
+curl -X POST "http://localhost:8000/predict_batch" \
+  -H "Content-Type: application/json" \
+  -d @artifacts/sample_inputs/batch_input.json
+
+# Get model info
+curl -X GET "http://localhost:8000/model/info"
+```
+
+## Troubleshooting
+
+### "Model not loaded" Error
+**Cause:** The trained model file is missing.  
+**Solution:** Run the pipeline first:
+```bash
+python main.py --pipeline
+```
+
+### Port Already in Use
+**Cause:** Another process is using port 8000.  
+**Solution:** Use a different port:
+```bash
+python main.py --server --port 9000
+```
 
 ## Reports
 

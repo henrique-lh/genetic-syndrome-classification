@@ -104,7 +104,7 @@ def data_visualization() -> None:
 
     tsne = TSNE(
         n_components=2,
-        perplexity=30,
+        perplexity=45,
         learning_rate="auto",
         init="pca",
         random_state=42
@@ -141,11 +141,13 @@ def data_visualization() -> None:
 
     silhouette_original = silhouette_score(X_scaled, y)
     silhouette_pca = silhouette_score(X_pca, y)
+    silhouette_tsne = silhouette_score(X_tsne, y)
 
     summary = {
         "explained_variance_pca_2d": float(explained_variance),
         "silhouette_score_original_space": float(silhouette_original),
-        "silhouette_score_pca_space": float(silhouette_pca)
+        "silhouette_score_pca_space": float(silhouette_pca),
+        "silhouette_score_tsne_space": float(silhouette_tsne)
     }
 
     with open(os.path.join(OUTPUT_DIR, "visualization_summary.json"), "w") as f:

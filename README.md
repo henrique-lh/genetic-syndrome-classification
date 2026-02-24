@@ -1,6 +1,7 @@
 # Genetic Syndrome Classification
 
 **Context**
+
 You are being hired by a fictional biotech company specializing in genetic research. The task involves analyzing embeddings derived from images to classify genetic syndromes. These embeddings are outputs from a pre-trained classification model. The company wants to improve its understanding of the data distribution and enhance the classification accuracy of genetic syndromes based on these
 embeddings.
 Your objective is to implement a comprehensive pipeline that includes data preprocessing, visualization, classification, manual implementation of key metrics, and insightful analysis.
